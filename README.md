@@ -42,7 +42,6 @@ Example:
 First Name,Last Name,Email,URL,Bio
 John,Doe,john.doe@example.com,https://example.com/john,John's biography...
 Jane,Smith,jane.smith@example.com,https://example.com/jane,Jane's biography...
-Copy
 
 #### User Matching Algorithm
 
