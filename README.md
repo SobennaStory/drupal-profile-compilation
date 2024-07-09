@@ -57,6 +57,8 @@ The module uses the following algorithm to match CSV entries to existing users:
 
 This approach allows for matching users even if there are slight variations in naming conventions or additional information in the username.
 
+All users are currently loaded before matching begins with each CSV entry.
+
 #### Points of Concern
 
 - Email: Currently set as 'cps-vo-test-' + CSV email. This is a placeholder to avoid sending actual emails.
