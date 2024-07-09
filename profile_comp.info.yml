@@ -1,0 +1,8 @@
+name: Profile Compilation
+description: Allows upload of CSV of users and profile images.
+package: Custom
+dependencies:
+  - drupal:file
+  - drupal:user
+type: module
+core_version_requirement: ^9.4 || ^10

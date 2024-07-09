@@ -1,0 +1,6 @@
+profile_comp.profile_comp:
+  title: 'Compile Profiles'
+  parent: system.admin_content
+  route_name: profile_comp.profile_comp
+  description: 'Upload profiles and profile images'
+  weight: 100
