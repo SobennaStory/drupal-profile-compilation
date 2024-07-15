@@ -284,7 +284,7 @@ class ProfileCreationForm extends FormBase {
   private function createNewUser(array $csv_entry) {
     $new_user = User::create();
     $username = $csv_entry['First Name'] . ' ' . $csv_entry['Last Name'];
-    $email = 'cps-vo-test-' . $csv_entry['Email']; // PLACEHOLDER. DONT WANT TO ACCIDENTALLY SEND EMAILS
+    $email = $csv_entry['Email'];
     $biography = $csv_entry['URL'] . "\n\n" . $csv_entry['Bio']; // PLACEHOLDER. WHERE TO PUT URL?
 
     $new_user->setUsername($username);
@@ -293,12 +293,27 @@ class ProfileCreationForm extends FormBase {
       'value' => $biography,
       'format' => 'basic_html',
     ]);
-    $new_user->setPassword('bob'); // PLACEHOLDER. NEED TO CHANGE PASSWORD
+    $new_user->setPassword($this->generateRandomPassword()); // PLACEHOLDER. NEED TO CHANGE PASSWORD
     $new_user->enforceIsNew();
     $new_user->activate();
     $new_user->save();
 
     return $new_user;
+  }
+
+  /**
+   * Generates a random password.
+   *
+   * @return string
+   *   A random password string.
+   */
+  private function generateRandomPassword($length = 12) {
+    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+{}[]';
+    $password = '';
+    for ($i = 0; $i < $length; $i++) {
+      $password .= $characters[random_int(0, strlen($characters) - 1)];
+    }
+    return $password;
   }
 
   /**
