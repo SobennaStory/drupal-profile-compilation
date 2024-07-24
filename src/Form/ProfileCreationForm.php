@@ -18,6 +18,7 @@ use Drupal\user\Entity\User;
  */
 class ProfileCreationForm extends FormBase {
 
+  protected $newUserCredentials = [];
   /**
    * The entity type manager service.
    *
@@ -157,6 +158,26 @@ class ProfileCreationForm extends FormBase {
     return $form;
   }
 
+  private function exportNewUserCredentials() {
+    if (empty($this->newUserCredentials)) {
+      return;
+    }
+
+    $content = "New User Credentials\n\n";
+    foreach ($this->newUserCredentials as $credential) {
+      $content .= "Username: {$credential['username']}\n";
+      $content .= "Email: {$credential['email']}\n";
+      $content .= "Password: {$credential['password']}\n\n";
+    }
+
+    $filename = 'new_user_credentials_' . date('Y-m-d_H-i-s') . '.txt';
+    $headers = [
+      'Content-Type' => 'text/plain',
+      'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+    ];
+
+    return new \Symfony\Component\HttpFoundation\Response($content, 200, $headers);
+  }
   /**
    * {@inheritdoc}
    */
@@ -189,6 +210,12 @@ class ProfileCreationForm extends FormBase {
     }
 
     $this->displayResults($new_usernames, $updated_usernames, $found_usernames);
+
+    // Export new user credentials
+    if (!empty($this->newUserCredentials)) {
+      $response = $this->exportNewUserCredentials();
+      $form_state->setResponse($response);
+    }
   }
 
   /**
@@ -257,9 +284,18 @@ class ProfileCreationForm extends FormBase {
     }
 
     if (empty($user->get('field_user_biography')->value)) {
-      $biography = $csv_entry['URL'] . "\n\n" . $csv_entry['Bio'];
+      $biography = $csv_entry['Bio'];
       $user->set('field_user_biography', [
         'value' => $biography,
+        'format' => 'basic_html',
+      ]);
+      $updated = true;
+    }
+
+    if (empty($user->get('field_url')->value)) {
+      $url = $csv_entry['URL'];
+      $user->set('field_url', [
+        'value' => $url,
         'format' => 'basic_html',
       ]);
       $updated = true;
@@ -298,10 +334,18 @@ class ProfileCreationForm extends FormBase {
       'value' => $url,
       'format' => 'basic_html',
     ]);
-    $new_user->setPassword($this->generateRandomPassword());
+    $password = $this->generateRandomPassword();
+    $new_user->setPassword($password);
     $new_user->enforceIsNew();
     $new_user->activate();
     $new_user->save();
+
+    // Store the credentials
+    $this->newUserCredentials[] = [
+      'username' => $username,
+      'email' => $email,
+      'password' => $password,
+    ];
 
     return $new_user;
   }
