@@ -18,7 +18,6 @@ use Drupal\user\Entity\User;
  */
 class ProfileCreationForm extends FormBase {
 
-  protected $newUserCredentials = [];
   /**
    * The entity type manager service.
    *
@@ -93,6 +92,11 @@ class ProfileCreationForm extends FormBase {
     $this->importer = $importer;
   }
 
+  public function access(AccountInterface $account) {
+    return AccessResult::allowedIfHasPermission($account, 'administer profile import');
+  }
+
+
   /**
    * {@inheritdoc}
    */
@@ -158,26 +162,7 @@ class ProfileCreationForm extends FormBase {
     return $form;
   }
 
-  private function exportNewUserCredentials() {
-    if (empty($this->newUserCredentials)) {
-      return;
-    }
 
-    $content = "New User Credentials\n\n";
-    foreach ($this->newUserCredentials as $credential) {
-      $content .= "Username: {$credential['username']}\n";
-      $content .= "Email: {$credential['email']}\n";
-      $content .= "Password: {$credential['password']}\n\n";
-    }
-
-    $filename = 'new_user_credentials_' . date('Y-m-d_H-i-s') . '.txt';
-    $headers = [
-      'Content-Type' => 'text/plain',
-      'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-    ];
-
-    return new \Symfony\Component\HttpFoundation\Response($content, 200, $headers);
-  }
   /**
    * {@inheritdoc}
    */
@@ -211,11 +196,6 @@ class ProfileCreationForm extends FormBase {
 
     $this->displayResults($new_usernames, $updated_usernames, $found_usernames);
 
-    // Export new user credentials
-    if (!empty($this->newUserCredentials)) {
-      $response = $this->exportNewUserCredentials();
-      $form_state->setResponse($response);
-    }
   }
 
   /**
@@ -331,8 +311,8 @@ class ProfileCreationForm extends FormBase {
       'format' => 'basic_html',
     ]);
     $new_user->set('field_url', [
-      'value' => $url,
-      'format' => 'basic_html',
+      'uri' => $url,
+      'title' => 'Personal Website',
     ]);
     $password = $this->generateRandomPassword();
     $new_user->setPassword($password);
@@ -340,12 +320,7 @@ class ProfileCreationForm extends FormBase {
     $new_user->activate();
     $new_user->save();
 
-    // Store the credentials
-    $this->newUserCredentials[] = [
-      'username' => $username,
-      'email' => $email,
-      'password' => $password,
-    ];
+
 
     return $new_user;
   }

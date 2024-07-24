@@ -4,3 +4,7 @@ profile_comp.profile_comp:
   route_name: profile_comp.profile_comp
   description: 'Upload profiles and profile images'
   weight: 100
+  options:
+    access_arguments:
+      - 'administer profile import'
+    access_check: 'user.permission'

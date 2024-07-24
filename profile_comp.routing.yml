@@ -4,4 +4,4 @@ profile_comp.profile_comp:
     _controller: '\Drupal\profile_comp\Controller\ProfileUploadController::build'
     _title: 'Automatically compile profiles'
   requirements:
-    _permission: 'access content'
+    _permission: 'administer profile import'

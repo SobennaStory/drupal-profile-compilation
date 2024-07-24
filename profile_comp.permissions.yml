@@ -1,0 +1,3 @@
+administer profile import:
+  title: 'administer profile import'
+  description: 'Allow users to import profiles via CSV.'

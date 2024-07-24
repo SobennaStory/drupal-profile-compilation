@@ -15,6 +15,10 @@ class ProfileUploadController extends ControllerBase {
     return 'profile_upload_form';
   }
 
+  public function access(AccountInterface $account) {
+    return AccessResult::allowedIfHasPermission($account, 'administer profile import');
+  }
+
   public function build() {
     $form_builder = $this->formBuilder();
     return [
