@@ -285,7 +285,8 @@ class ProfileCreationForm extends FormBase {
     $new_user = User::create();
     $username = $csv_entry['First Name'] . ' ' . $csv_entry['Last Name'];
     $email = $csv_entry['Email'];
-    $biography = $csv_entry['URL'] . "\n\n" . $csv_entry['Bio']; // PLACEHOLDER. WHERE TO PUT URL?
+    $url = $csv_entry['URL'];
+    $biography =  $csv_entry['Bio'];
 
     $new_user->setUsername($username);
     $new_user->setEmail($email);
@@ -293,7 +294,11 @@ class ProfileCreationForm extends FormBase {
       'value' => $biography,
       'format' => 'basic_html',
     ]);
-    $new_user->setPassword($this->generateRandomPassword()); // PLACEHOLDER. NEED TO CHANGE PASSWORD
+    $new_user->set('field_url', [
+      'value' => $url,
+      'format' => 'basic_html',
+    ]);
+    $new_user->setPassword($this->generateRandomPassword());
     $new_user->enforceIsNew();
     $new_user->activate();
     $new_user->save();
